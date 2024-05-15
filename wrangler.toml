@@ -8,16 +8,16 @@ pages_build_output_dir = ".vercel/output/static"
 # If you are running back-end logic in a Pages Function, running it closer to your back-end infrastructure
 # rather than the end user may result in better performance.
 # Docs: https://developers.cloudflare.com/pages/functions/smart-placement/#smart-placement
-# [placement]
-# mode = "smart"
+[placement]
+mode = "smart"
 
 # Variable bindings. These are arbitrary, plaintext strings (similar to environment variables)
 # Docs:
 # - https://developers.cloudflare.com/pages/functions/bindings/#environment-variables
 # Note: Use secrets to store sensitive data.
 # - https://developers.cloudflare.com/pages/functions/bindings/#secrets
-# [vars]
-# MY_VARIABLE = "production_value"
+[vars]
+WORKER_ENV = "local"
 
 # Bind the Workers AI model catalog. Run machine learning models, powered by serverless GPUs, on Cloudflare’s global network
 # Docs: https://developers.cloudflare.com/pages/functions/bindings/#workers-ai
@@ -26,10 +26,11 @@ pages_build_output_dir = ".vercel/output/static"
 
 # Bind a D1 database. D1 is Cloudflare’s native serverless SQL database.
 # Docs: https://developers.cloudflare.com/pages/functions/bindings/#d1-databases
-# [[d1_databases]]
-# binding = "MY_DB"
-# database_name = "my-database"
-# database_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+[[d1_databases]]
+binding = "DB"
+database_name = "test-next-cf-db"
+database_id = "bd3e058b-c7f4-447c-b75c-f548acdf8589"
+migrations_dir = "migrations"
 
 # Bind a Durable Object. Durable objects are a scale-to-zero compute primitive based on the actor model.
 # Durable Objects can live for as long as needed. Use these when you need a long-running "server", such as in realtime apps.
@@ -78,9 +79,13 @@ pages_build_output_dir = ".vercel/output/static"
 # id = "<PREVIEW_NAMESPACE_ID>"
 
 ######## PRODUCTION environment config ########
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "test-next-cf-db"
+database_id = "bd3e058b-c7f4-447c-b75c-f548acdf8589"
 
-# [env.production.vars]
-# API_KEY = "abc123"
+[env.production.vars]
+WORKER_ENV = "production"
 
 # [[env.production.kv_namespaces]]
 # binding = "MY_KV_NAMESPACE"
