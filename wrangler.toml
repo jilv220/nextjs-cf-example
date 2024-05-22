@@ -16,6 +16,8 @@ mode = "smart"
 # - https://developers.cloudflare.com/pages/functions/bindings/#environment-variables
 # Note: Use secrets to store sensitive data.
 # - https://developers.cloudflare.com/pages/functions/bindings/#secrets
+#
+# Local secrets are defined inside .dev.vars
 [vars]
 WORKER_ENV = "local"
 

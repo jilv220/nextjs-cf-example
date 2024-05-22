@@ -1,9 +1,16 @@
 {
   "extends": [
     "next/core-web-vitals",
-    "plugin:eslint-plugin-next-on-pages/recommended"
+    "plugin:eslint-plugin-next-on-pages/recommended",
+    "prettier"
   ],
   "plugins": [
-    "eslint-plugin-next-on-pages"
-  ]
+    "eslint-plugin-next-on-pages",
+    "unused-imports",
+    "prettier"
+  ],
+  "rules": {
+    "no-unused-vars": "off",
+    "unused-imports/no-unused-imports": "warn"
+  }
 }
