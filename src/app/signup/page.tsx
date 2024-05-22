@@ -5,11 +5,15 @@ export const runtime = 'edge';
 import { useFormState } from 'react-dom';
 import { signup } from '../actions/session';
 import { useRef } from 'react';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 export default function Page() {
   const ref = useRef<HTMLFormElement>(null);
   const [state, signupAction] = useFormState(signup, {
-    error: undefined,
+    emailErrors: [],
+    passwordErrors: [],
   });
 
   return (
@@ -22,13 +26,15 @@ export default function Page() {
           ref.current?.reset();
         }}
       >
-        <label htmlFor="username">Username</label>
-        <input name="username" id="username" />
+        <Label htmlFor="email">Email</Label>
+        <Input type="email" name="email" />
+        {state.emailErrors.length > 0 && <p>{state.emailErrors.at(0)}</p>}
         <br />
-        <label htmlFor="password">Password</label>
-        <input type="password" name="password" id="password" />
+        <Label htmlFor="password">Password</Label>
+        <Input type="password" name="password" />
+        {state.passwordErrors.length > 0 && <p>{state.passwordErrors.at(0)}</p>}
         <br />
-        <button>Continue</button>
+        <Button>Continue</Button>
       </form>
     </>
   );

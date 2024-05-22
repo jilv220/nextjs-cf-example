@@ -22,10 +22,12 @@ export const initLucia = (D1: DrizzleD1Database) => {
         secure: workerEnv === 'production',
       },
     },
+    // Choose the attributes u want to expose here
     getUserAttributes: (attributes) => {
       return {
         username: attributes.username,
         avatarUrl: attributes.avatarUrl,
+        email: attributes.email,
       };
     },
   });

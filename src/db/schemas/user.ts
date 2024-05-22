@@ -4,7 +4,8 @@ import { z } from 'zod';
 
 export const userTable = sqliteTable('user', {
   id: text('id').primaryKey(),
-  username: text('username').unique(),
+  email: text('email').unique(),
+  username: text('username'),
   hashedPassword: text('hashed_password'), // oauth user does not have password
   githubId: numeric('github_id').unique(),
   avatarUrl: text('avatar_url'),
@@ -20,5 +21,5 @@ export const sessionTable = sqliteTable('session', {
   expiresAt: integer('expires_at').notNull(),
 });
 
-export const insertUserSchema = createInsertSchema(userTable);
+const insertUserSchema = createInsertSchema(userTable);
 export type DatabaseUser = Omit<z.infer<typeof insertUserSchema>, 'id' | 'hashedPassword'>;

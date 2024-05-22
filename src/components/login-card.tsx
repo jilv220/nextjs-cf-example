@@ -6,6 +6,8 @@ import { validateRequest } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { GoogleIcon } from './brand-icons';
 import DiscordIcon from './brand-icons/discord-icon';
+import Divider from './ui/divider';
+import AuthForm from './auth-form';
 
 export default async function LoginCard() {
   const { user } = await validateRequest();
@@ -17,10 +19,20 @@ export default async function LoginCard() {
     <Card className="md:w-[40%]">
       <CardHeader className="space-y-0">
         <CardTitle className="text-3xl">Log In</CardTitle>
-        <div className="text-muted-foreground">continue with: </div>
+        <div className="text-muted-foreground">
+          New to Starter?{' '}
+          <Link
+            href="/signup"
+            className="font-medium text-blue-500 hover:underline hover:underline-offset-4"
+          >
+            Sign up for an account
+          </Link>
+        </div>
       </CardHeader>
-      <CardFooter className="w-full flex-col">
+      <CardFooter className="w-full flex-col p-10 pt-0">
         <div className="flex flex-col gap-2 w-full">
+          <AuthForm />
+          <Divider text="or" />
           <Button asChild>
             <Link href="/login/github">
               <Github className="mr-2 h-4 w-4" />
