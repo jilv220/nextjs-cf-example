@@ -1,11 +1,11 @@
-import { lucia } from '@/lib/auth';
 import { cookies } from 'next/headers';
 import { OAuth2RequestError } from 'arctic';
 import { generateIdFromEntropySize } from 'lucia';
 import { github } from '@/lib/oauth';
-import { db } from '@/db/drizzle';
 import { userTable } from '@/db/schemas';
 import { eq } from 'drizzle-orm';
+import { getDBFromContext } from '@/db/drizzle';
+import { getLuciaFromContext } from '@/lib/auth';
 
 export const runtime = 'edge';
 
@@ -29,13 +29,14 @@ export async function GET(request: Request): Promise<Response> {
     });
 
     const githubUser: GitHubUser = await githubUserResponse.json();
-    console.log(githubUser);
+    const db = getDBFromContext();
 
     const [existingUser] = await db
       .select()
       .from(userTable)
       .where(eq(userTable.githubId, githubUser.id));
 
+    const lucia = getLuciaFromContext();
     if (existingUser) {
       const session = await lucia.createSession(existingUser.id, {});
       const sessionCookie = lucia.createSessionCookie(session.id);

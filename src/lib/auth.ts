@@ -1,33 +1,46 @@
 import { Lucia, Session, User } from 'lucia';
 import { getRequestContext } from '@cloudflare/next-on-pages';
-import { adapter } from '@/db/drizzle';
-import { DatabaseUser } from '@/db/schemas';
+import { DatabaseUser, sessionTable, userTable } from '@/db/schemas';
 import { cache } from 'react';
 import { cookies } from 'next/headers';
+import { DrizzleSQLiteAdapter } from '@lucia-auth/adapter-drizzle';
+import { DrizzleD1Database } from 'drizzle-orm/d1';
+import { initDrizzle } from '@/db/drizzle';
 
-// hmmm, bad DX
-const workerEnv = getRequestContext().env.WORKER_ENV as string;
+export const initLucia = (D1: DrizzleD1Database) => {
+  // hmmm, bad DX
+  const workerEnv = getRequestContext().env.WORKER_ENV as string;
+  const adapter = new DrizzleSQLiteAdapter(D1, sessionTable, userTable);
 
-export const lucia = new Lucia(adapter, {
-  sessionCookie: {
-    // this sets cookies with super long expiration
-    // since Next.js doesn't allow Lucia to extend cookie expiration when rendering pages
-    expires: false,
-    attributes: {
-      // set to `true` when using HTTPS
-      secure: workerEnv === 'production',
+  return new Lucia(adapter, {
+    sessionCookie: {
+      // this sets cookies with super long expiration
+      // since Next.js doesn't allow Lucia to extend cookie expiration when rendering pages
+      expires: false,
+      attributes: {
+        // set to `true` when using HTTPS
+        secure: workerEnv === 'production',
+      },
     },
-  },
-  getUserAttributes: (attributes) => {
-    return {
-      username: attributes.username,
-      avatarUrl: attributes.avatarUrl,
-    };
-  },
-});
+    getUserAttributes: (attributes) => {
+      return {
+        username: attributes.username,
+        avatarUrl: attributes.avatarUrl,
+      };
+    },
+  });
+};
+
+export const getLuciaFromContext = () => {
+  const { env } = getRequestContext();
+  const drizzle = initDrizzle(env.DB);
+  return initLucia(drizzle);
+};
 
 export const validateRequest = cache(
   async (): Promise<{ user: User; session: Session } | { user: null; session: null }> => {
+    const lucia = getLuciaFromContext();
+
     const sessionId = cookies().get(lucia.sessionCookieName)?.value ?? null;
     if (!sessionId) {
       return {
@@ -54,7 +67,7 @@ export const validateRequest = cache(
 
 declare module 'lucia' {
   interface Register {
-    Lucia: typeof lucia;
+    Lucia: ReturnType<typeof initLucia>;
     DatabaseUserAttributes: DatabaseUser;
   }
 }

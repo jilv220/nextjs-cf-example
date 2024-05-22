@@ -3,9 +3,10 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { Scrypt, generateIdFromEntropySize } from 'lucia';
-import { db } from '@/db/drizzle';
 import { userTable } from '@/db/schemas';
-import { lucia, validateRequest } from '@/lib/auth';
+import { getLuciaFromContext, initLucia, validateRequest } from '@/lib/auth';
+import { initDrizzle } from '@/db/drizzle';
+import { getRequestContext } from '@cloudflare/next-on-pages';
 
 interface ActionResult {
   error?: string;
@@ -38,12 +39,15 @@ export async function signup(_: any, formData: FormData): Promise<ActionResult> 
   const userId = generateIdFromEntropySize(10); // 16 characters long
 
   // TODO: check if username is already used
+  const { env } = getRequestContext();
+  const db = initDrizzle(env.DB);
   await db.insert(userTable).values({
     id: userId,
     username,
     hashedPassword,
   });
 
+  const lucia = initLucia(db);
   const session = await lucia.createSession(userId, {});
   const sessionCookie = lucia.createSessionCookie(session.id);
   cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
@@ -58,6 +62,7 @@ export async function signout(redirectPath = '/'): Promise<ActionResult> {
     };
   }
 
+  const lucia = getLuciaFromContext();
   await lucia.invalidateSession(session.id);
 
   const sessionCookie = lucia.createBlankSessionCookie();
