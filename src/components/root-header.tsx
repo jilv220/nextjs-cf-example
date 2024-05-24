@@ -1,13 +1,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Button } from './ui/button';
-import { validateRequest } from '@/lib/auth';
-import { MainNavDropDown } from './mainnav-dropdown';
-import { ThemeToggle } from './theme-toggle';
+import RootHeaderRear from './root-header-rear';
+import { Suspense } from 'react';
 
-export async function RootHeader() {
-  const { user } = await validateRequest();
-
+export function RootHeader() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95">
       <div className="container flex items-center space-x-2 h-14">
@@ -24,19 +20,9 @@ export async function RootHeader() {
           </Link>
         </div>
         <div className="flex items-center space-x-3">
-          {!user ? (
-            <>
-              <Link href="/login"> Log In</Link>
-              <Button asChild>
-                <Link href="/signup"> Sign Up</Link>
-              </Button>
-            </>
-          ) : (
-            <>
-              <ThemeToggle />
-              <MainNavDropDown user={user} />
-            </>
-          )}
+          <Suspense>
+            <RootHeaderRear />
+          </Suspense>
         </div>
       </div>
     </header>
