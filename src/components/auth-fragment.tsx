@@ -1,4 +1,4 @@
-import { Card, CardHeader, CardTitle, CardFooter } from './ui/card';
+import { Card, CardFooter } from './ui/card';
 import { Github } from 'lucide-react';
 import { Button } from './ui/button';
 import Link from 'next/link';
@@ -8,8 +8,9 @@ import { GoogleIcon } from './brand-icons';
 import DiscordIcon from './brand-icons/discord-icon';
 import Divider from './ui/divider';
 import AuthForm from './auth-form';
+import AuthHeader from './auth-header';
 
-export default async function LoginCard() {
+export default async function AuthFragment() {
   const { user } = await validateRequest();
   if (user) {
     return redirect('/');
@@ -17,18 +18,7 @@ export default async function LoginCard() {
 
   return (
     <Card className="md:w-[40%]">
-      <CardHeader className="space-y-0">
-        <CardTitle className="text-3xl">Log In</CardTitle>
-        <div className="text-muted-foreground">
-          New to Starter?{' '}
-          <Link
-            href="/signup"
-            className="font-medium text-blue-500 hover:underline hover:underline-offset-4"
-          >
-            Sign up for an account
-          </Link>
-        </div>
-      </CardHeader>
+      <AuthHeader />
       <CardFooter className="w-full flex-col p-10 pt-0">
         <div className="flex flex-col gap-2 w-full">
           <AuthForm />

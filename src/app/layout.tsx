@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import { RootHeader } from '@/components/root-header';
 import Providers from './providers';
 import { validateRequest } from '@/lib/auth';
 
@@ -22,10 +21,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Providers value={session}>
-          <RootHeader />
-          {children}
-        </Providers>
+        <Providers value={session}>{children}</Providers>
       </body>
     </html>
   );

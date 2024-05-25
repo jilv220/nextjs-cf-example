@@ -7,28 +7,14 @@ import { userTable } from '@/db/schemas';
 import { getLuciaFromContext, initLucia, validateRequest } from '@/lib/auth';
 import { initDrizzle } from '@/db/drizzle';
 import { getRequestContext } from '@cloudflare/next-on-pages';
-import { insertUserSchema } from '@/validator/user';
+import { InsertUser } from '@/validator/user';
 
 interface ActionResult {
   error?: string;
 }
 
-export async function signup(_: any, formData: FormData) {
-  const parseRes = insertUserSchema.safeParse({
-    email: formData.get('email'),
-    password: formData.get('password'),
-  });
-
-  if (!parseRes.success) {
-    const errors = parseRes.error.format();
-    return {
-      emailErrors: errors.email?._errors || [],
-      passwordErrors: errors.password?._errors || [],
-    };
-  }
-
-  const { password, email } = parseRes.data;
-
+export async function signup(formData: InsertUser) {
+  const { password, email } = formData;
   const scrpyt = new Scrypt();
   const hashedPassword = await scrpyt.hash(password);
   const userId = generateIdFromEntropySize(10); // 16 characters long
